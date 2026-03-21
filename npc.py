@@ -216,8 +216,15 @@ class CacoDemonNPC(NPC):
         self.attack_dist = 1.0
         self.health = 50
         self.attack_damage = 55
-        self.speed = 0.05
+        self.speed = 0.08
         self.accuracy = 0.35
+
+    def attack(self):
+        if self.animation_trigger:
+            self.game.sound.npc_shot.play()
+            dist = math.hypot(self.game.player.x - self.x, self.game.player.y - self.y)
+            if dist < 1.0:
+                self.game.player.get_damage(self.attack_damage)
 
 class CyberDemonNPC(NPC):
     def __init__(self, game, path='resources/sprites/npc/cyber_demon/0.png', pos=(11.5, 6.0),
@@ -225,9 +232,18 @@ class CyberDemonNPC(NPC):
         super().__init__(game, path, pos, scale, shift, animation_time)
         self.attack_dist = 6
         self.health = 350
-        self.attack_damage = 15
+        self.attack_damage = 25
         self.speed = 0.055
         self.accuracy = 0.25
+        self.projectile_path = 'resources/sprites/animated_sprites/red_light/0.png'
+
+    def attack(self):
+        if self.animation_trigger:
+            self.game.sound.npc_shot.play()
+            from projectile import Projectile
+            angle = math.atan2(self.game.player.y - self.y, self.game.player.x - self.x)
+            proj = Projectile(self.game, self.projectile_path, (self.x, self.y), angle, 0.005, self.attack_damage)
+            self.game.object_handler.add_sprite(proj)
 
 
 class MaleZombieNPC(NPC):

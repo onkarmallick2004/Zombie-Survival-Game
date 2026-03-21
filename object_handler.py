@@ -70,6 +70,7 @@ class ObjectHandler:
 
     def update(self):
         self.npc_positions={npc.map_pos for npc in self.npc_list if npc.alive}
+        self.sprite_list = [sprite for sprite in self.sprite_list if getattr(sprite, 'alive', True)]
         [sprite.update() for sprite in self.sprite_list]
         [npc.update() for npc in self.npc_list]
         self.check_win()

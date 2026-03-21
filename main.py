@@ -32,7 +32,9 @@ class Game:
         self.object_renderer=ObjectRenderer(self)
         self.raycasting=RayCasting(self)
         self.object_handler=ObjectHandler(self)
-        self.weapon=Weapon(self)
+        self.weapons = [Shotgun(self), Pistol(self), AssaultRifle(self)]
+        self.weapon_index = 0
+        self.weapon = self.weapons[self.weapon_index]
         self.sound=Sound(self)
         self.pathfinding=PathFinding(self)
         pg.mixer.music.play(-1)
@@ -127,6 +129,17 @@ class Game:
 
             if self.state == 'PLAYING':
                 self.player.single_fire_event(event)
+
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_1:
+                        self.weapon_index = 0
+                        self.weapon = self.weapons[self.weapon_index]
+                    elif event.key == pg.K_2:
+                        self.weapon_index = 1
+                        self.weapon = self.weapons[self.weapon_index]
+                    elif event.key == pg.K_3:
+                        self.weapon_index = 2
+                        self.weapon = self.weapons[self.weapon_index]
 
     def run(self):
         while True:

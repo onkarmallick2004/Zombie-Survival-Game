@@ -132,6 +132,12 @@ class Player:
         self.mouse_control()
         self.recover_health()
 
+        if getattr(self.game.weapon, 'automatic', False):
+            if pg.mouse.get_pressed()[0] and not self.shot and not self.game.weapon.reloading:
+                self.game.sound.shotgun.play()
+                self.shot=True
+                self.game.weapon.reloading=True
+
     @property
     def pos(self):
         return self.x,self.y
