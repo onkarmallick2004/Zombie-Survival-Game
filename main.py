@@ -1,5 +1,12 @@
 import pygame as pg
 import sys
+import os
+
+if getattr(sys, 'frozen', False):
+    os.chdir(sys._MEIPASS)
+elif __file__:
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
 from setting import *
 from map import *
 from player import *
@@ -148,7 +155,12 @@ class Game:
             self.draw()
 
 
-if __name__=='__main__':
-    game=Game()
-    game.run()
-
+if __name__ == '__main__':
+    try:
+        game = Game()
+        game.run()
+    except Exception as e:
+        import traceback
+        with open('crash_log.txt', 'w') as f:
+            traceback.print_exc(file=f)
+        sys.exit(1)
