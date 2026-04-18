@@ -1,0 +1,20 @@
+{
+  "name": "zombie-game",
+  "version": "1.0.0",
+  "description": "Run for your life as a zombie apocalypse breaks loose. Navigate a treacherous maze, blast away hordes of undead, and survive against all odds in this fast-paced first-person shooter.",
+  "homepage": "https://github.com/onkarmallick2004/Zombie-Survival-Game#readme",
+  "bugs": {
+    "url": "https://github.com/onkarmallick2004/Zombie-Survival-Game/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onkarmallick2004/Zombie-Survival-Game.git"
+  },
+  "license": "ISC",
+  "author": "Shivam Mishra",
+  "type": "commonjs",
+  "main": "main.py",
+  "scripts": {
+    "start": "python main.py"
+  }
+}
