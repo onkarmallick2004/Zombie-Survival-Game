@@ -1,7 +1,7 @@
 from sprite_object import *
 
 class Weapon(AnimatedSprite):
-    def __init__(self, game, path='resources/sprites/weapons/shotgun/0 (1).png',  scale=0.4, animation_time=90, damage=50, tint=None, automatic=False):
+    def __init__(self, game, path='resources/sprites/weapons/shotgun/0 (1).png',  scale=0.4, animation_time=90, damage=50, tint=None, automatic=False, max_ammo=30):
         super().__init__(game=game, path=path,scale=scale, animation_time=animation_time)
         if tint:
             for i in range(len(self.images)):
@@ -19,6 +19,8 @@ class Weapon(AnimatedSprite):
         self.frame_counter=0
         self.damage=damage
         self.automatic=automatic
+        self.max_ammo=max_ammo
+        self.ammo=max_ammo
 
     def animate_shot(self):
         if self.reloading:
@@ -40,12 +42,12 @@ class Weapon(AnimatedSprite):
 
 class Shotgun(Weapon):
     def __init__(self, game):
-        super().__init__(game, damage=50, animation_time=90, automatic=False)
+        super().__init__(game, damage=50, animation_time=90, automatic=False, max_ammo=20)
 
 class Pistol(Weapon):
     def __init__(self, game):
-        super().__init__(game, scale=0.3, damage=20, animation_time=50, automatic=False, tint=(100, 255, 100, 255))
+        super().__init__(game, scale=0.3, damage=20, animation_time=50, automatic=False, tint=(100, 255, 100, 255), max_ammo=60)
 
 class AssaultRifle(Weapon):
     def __init__(self, game):
-        super().__init__(game, damage=35, animation_time=40, automatic=True, tint=(255, 100, 100, 255))
+        super().__init__(game, damage=35, animation_time=40, automatic=True, tint=(255, 100, 100, 255), max_ammo=100)

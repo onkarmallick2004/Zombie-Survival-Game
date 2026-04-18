@@ -1,5 +1,7 @@
 from collections import deque
 from functools import lru_cache
+import heapq
+import math
 
 class PathFinding:
     def __init__(self,game):
@@ -12,30 +14,39 @@ class PathFinding:
 
     @lru_cache
     def get_path(self,start,goal):
-        self.visited=self.bfs(start,goal,self.graph)
+        self.visited=self.a_star(start,goal,self.graph)
         path=[goal]
         step=self.visited.get(goal,start)
 
         while step and step!=start:
             path.append(step)
-            step=self.visited[step]
+            step=self.visited.get(step, start)
         return path[-1]
 
+    def heuristic(self, p1, p2):
+        return max(abs(p1[0] - p2[0]), abs(p1[1] - p2[1]))
 
-    def bfs(self,start,goal,graph):
-        queue=deque([start])
+    def a_star(self,start,goal,graph):
+        pq = [(0, start)]
         visited={start:None}
+        g_score = {start: 0}
 
-        while queue:
-            curr_node =queue.popleft()
-            if curr_node==goal:
+        while pq:
+            current_f, current_node = heapq.heappop(pq)
+            if current_node==goal:
                 break
-            next_nodes = graph.get(curr_node, [])
+            
+            next_nodes = graph.get(current_node, [])
 
             for next_node in next_nodes:
-                if next_node not in visited and next_node not in self.game.object_handler.npc_positions:
-                    queue.append(next_node)
-                    visited[next_node]=curr_node
+                if next_node not in self.game.object_handler.npc_positions:
+                    tentative_g_score = g_score[current_node] + 1
+                    
+                    if next_node not in g_score or tentative_g_score < g_score[next_node]:
+                        g_score[next_node] = tentative_g_score
+                        f_score = tentative_g_score + self.heuristic(next_node, goal)
+                        heapq.heappush(pq, (f_score, next_node))
+                        visited[next_node] = current_node
 
         return visited
 

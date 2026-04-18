@@ -1,6 +1,7 @@
 from sprite_object import *
 from npc import *
 from random import choices, randrange
+from items import HealthPack, AmmoCrate
 
 class ObjectHandler:
     def __init__(self,game):
@@ -13,6 +14,7 @@ class ObjectHandler:
         add_sprite=self.add_sprite
         add_npc=self.add_npc
         self.npc_positions={}
+        self.wave = 1
 
          # spawn npc
         f = getattr(game, 'difficulty', 1)
@@ -21,6 +23,7 @@ class ObjectHandler:
         self.weights = [0, 0, 0,70,50,50]
         self.restricted_area = {(i, j) for i in range(10 * f) for j in range(10 * f)}
         self.spawn_npc()
+        self.spawn_items()
 
         add_sprite(AnimatedSprite(game, pos=(11.5 * f, 3.5 * f)))
         add_sprite(AnimatedSprite(game, pos=(1.5 * f, 1.5 * f)))
@@ -45,6 +48,20 @@ class ObjectHandler:
         add_sprite(AnimatedSprite(game, pos=(1.5 * f, 30.5 * f)))
         add_sprite(AnimatedSprite(game, pos=(1.5 * f, 24.5 * f)))
 
+    def spawn_items(self):
+        f = getattr(self.game, 'difficulty', 1)
+        for _ in range(10 * f):
+            pos = x, y = randrange(self.game.map.cols), randrange(self.game.map.rows)
+            while (pos in self.game.map.world_map):
+                pos = x, y = randrange(self.game.map.cols), randrange(self.game.map.rows)
+            self.add_sprite(HealthPack(self.game, pos=(x + 0.5, y + 0.5)))
+            
+        for _ in range(10 * f):
+            pos = x, y = randrange(self.game.map.cols), randrange(self.game.map.rows)
+            while (pos in self.game.map.world_map):
+                pos = x, y = randrange(self.game.map.cols), randrange(self.game.map.rows)
+            self.add_sprite(AmmoCrate(self.game, pos=(x + 0.5, y + 0.5)))
+
 
     def spawn_npc(self):
         for i in range(self.enemies):
@@ -57,14 +74,13 @@ class ObjectHandler:
 
     def check_win(self):
         if not any(npc.alive for npc in self.npc_list):
-            self.game.object_renderer.win()
-            pg.display.flip()
-            pg.time.delay(1500)
-            self.game.new_game()
-            self.game.state = 'START_MENU'
-            pg.mouse.set_visible(True)
-            if hasattr(pg.event, 'set_grab'):
-                pg.event.set_grab(False)
+            self.wave += 1
+            f = getattr(self.game, 'difficulty', 1)
+            self.enemies = int(20 * (f**2) * (1.2 ** self.wave))
+            # Increase weights for harder enemies
+            self.weights = [self.weights[0]+2, self.weights[1]+1, self.weights[2]+1, self.weights[3], self.weights[4], self.weights[5]]
+            self.spawn_npc()
+            self.spawn_items()
         
 
 

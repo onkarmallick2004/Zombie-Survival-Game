@@ -17,8 +17,8 @@ class Player:
         self.diag_move_corr = 1 / math.sqrt(2)
 
     def recover_health(self):
-        if self.check_health_recovery_delay() and self.health <PLAYER_MAX_HEALTH:
-            self.health+=10
+        if self.check_health_recovery_delay() and self.health < (PLAYER_MAX_HEALTH // 2):
+            self.health+=1
 
 
     def check_health_recovery_delay(self):
@@ -40,13 +40,16 @@ class Player:
         self.game.object_renderer.player_damage()
         self.game.sound.player_pain.play()
         self.check_game_over()
+        self.time_prev = pg.time.get_ticks()  # Reset the auto-heal delay when taking damage
 
     def single_fire_event(self,event):
         if event.type==pg.MOUSEBUTTONDOWN:
             if event.button==1 and not self.shot and not self.game.weapon.reloading:
-                self.game.sound.shotgun.play()
-                self.shot=True
-                self.game.weapon.reloading=True
+                if self.game.weapon.ammo > 0:
+                    self.game.sound.shotgun.play()
+                    self.shot=True
+                    self.game.weapon.reloading=True
+                    self.game.weapon.ammo -= 1
 
 
 
@@ -134,9 +137,11 @@ class Player:
 
         if getattr(self.game.weapon, 'automatic', False):
             if pg.mouse.get_pressed()[0] and not self.shot and not self.game.weapon.reloading:
-                self.game.sound.shotgun.play()
-                self.shot=True
-                self.game.weapon.reloading=True
+                if self.game.weapon.ammo > 0:
+                    self.game.sound.shotgun.play()
+                    self.shot=True
+                    self.game.weapon.reloading=True
+                    self.game.weapon.ammo -= 1
 
     @property
     def pos(self):
