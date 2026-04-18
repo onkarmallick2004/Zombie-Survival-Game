@@ -15,6 +15,9 @@ class ObjectHandler:
         add_npc=self.add_npc
         self.npc_positions={}
         self.wave = 1
+        self.wave_transition = False
+        self.wave_transition_time = 0
+        self.last_item_spawn_time = pg.time.get_ticks()
 
          # spawn npc
         f = getattr(game, 'difficulty', 1)
@@ -24,6 +27,7 @@ class ObjectHandler:
         self.restricted_area = {(i, j) for i in range(10 * f) for j in range(10 * f)}
         self.spawn_npc()
         self.spawn_items()
+        self.last_item_spawn_time = pg.time.get_ticks()
 
         add_sprite(AnimatedSprite(game, pos=(11.5 * f, 3.5 * f)))
         add_sprite(AnimatedSprite(game, pos=(1.5 * f, 1.5 * f)))
@@ -73,16 +77,13 @@ class ObjectHandler:
 
 
     def check_win(self):
-        if not any(npc.alive for npc in self.npc_list):
+        if not any(npc.alive for npc in self.npc_list) and not self.wave_transition:
             self.wave += 1
-            f = getattr(self.game, 'difficulty', 1)
-            self.enemies = int(20 * (f**2) * (1.2 ** self.wave))
-            # Increase weights for harder enemies
-            self.weights = [self.weights[0]+2, self.weights[1]+1, self.weights[2]+1, self.weights[3], self.weights[4], self.weights[5]]
-            self.spawn_npc()
-            self.spawn_items()
-        
+            self.wave_transition = True
+            self.wave_transition_time = pg.time.get_ticks()
 
+    def clear_items(self):
+        self.sprite_list = [s for s in self.sprite_list if not isinstance(s, (HealthPack, AmmoCrate))]
 
     def update(self):
         self.npc_positions={npc.map_pos for npc in self.npc_list if npc.alive}
@@ -90,6 +91,23 @@ class ObjectHandler:
         [sprite.update() for sprite in self.sprite_list]
         [npc.update() for npc in self.npc_list]
         self.check_win()
+        
+        time_now = pg.time.get_ticks()
+        
+        if self.wave_transition and time_now - self.wave_transition_time > 5000:
+            self.wave_transition = False
+            f = getattr(self.game, 'difficulty', 1)
+            self.enemies = int(20 * (f**2) * (1.2 ** self.wave))
+            self.weights = [self.weights[0]+2, self.weights[1]+1, self.weights[2]+1, self.weights[3], self.weights[4], self.weights[5]]
+            self.spawn_npc()
+            self.clear_items()
+            self.spawn_items()
+            self.last_item_spawn_time = time_now
+            
+        if not self.wave_transition and time_now - self.last_item_spawn_time > 30000:
+            self.clear_items()
+            self.spawn_items()
+            self.last_item_spawn_time = time_now
 
 
     def add_npc(self,npc):

@@ -79,7 +79,17 @@ class NPC(AnimatedSprite):
                 self.game.sound.npc_pain.play()
                 self.game.player.shot=False
                 self.pain=True
-                self.health-=self.game.weapon.damage
+                
+                weapon = self.game.weapon
+                range_factor = getattr(weapon, 'range_factor', 0.1)
+                
+                if self.dist > 2.0:
+                    multiplier = max(0.1, 1.0 - ((self.dist - 2.0) * range_factor))
+                else:
+                    multiplier = 1.0
+                    
+                actual_damage = weapon.damage * multiplier
+                self.health -= actual_damage
                 self.check_health()
 
     def check_health(self):

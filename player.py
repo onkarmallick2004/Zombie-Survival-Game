@@ -6,8 +6,14 @@ import math
 class Player:
     def __init__(self,game):
         self.game=game
-        f = getattr(game, 'difficulty', 1)
-        self.x,self.y=PLAYER_POS[0] * f, PLAYER_POS[1] * f
+        
+        import random
+        while True:
+            x, y = random.randrange(self.game.map.cols), random.randrange(self.game.map.rows)
+            if (x, y) not in self.game.map.world_map:
+                self.x, self.y = x + 0.5, y + 0.5
+                break
+                
         self.angle=PLAYER_ANGLE
         self.shot=False
         self.health=PLAYER_MAX_HEALTH
