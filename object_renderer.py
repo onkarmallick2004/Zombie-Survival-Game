@@ -64,23 +64,25 @@ class ObjectRenderer:
         self.screen.blit(ammo_text, (pos_x + 20 + icon_w, pos_y + 5))
 
     def draw_minimap(self):
-        map_w = self.game.map.cols * 10
-        map_h = self.game.map.rows * 10
+        f = getattr(self.game, 'difficulty', 1)
+        scale = 10.0 / f
+        map_w = int(self.game.map.cols * scale)
+        map_h = int(self.game.map.rows * scale)
         s = pg.Surface((map_w, map_h))
         s.set_alpha(150)
         s.fill((0, 0, 0))
         self.screen.blit(s, (10, 10))
         
         for x, y in self.game.map.world_map:
-            pg.draw.rect(self.screen, (100, 100, 100), (10 + x * 10, 10 + y * 10, 10, 10))
+            pg.draw.rect(self.screen, (100, 100, 100), (10 + int(x * scale), 10 + int(y * scale), math.ceil(scale), math.ceil(scale)))
             
         px, py = self.game.player.pos
-        pg.draw.circle(self.screen, (0, 255, 0), (10 + int(px * 10), 10 + int(py * 10)), 3)
+        pg.draw.circle(self.screen, (0, 255, 0), (10 + int(px * scale), 10 + int(py * scale)), max(1, int(3/f)))
         
-        length = 10
-        end_x = int(px * 10) + math.cos(self.game.player.angle) * length
-        end_y = int(py * 10) + math.sin(self.game.player.angle) * length
-        pg.draw.line(self.screen, (255, 255, 0), (10 + int(px * 10), 10 + int(py * 10)), (10 + int(end_x), 10 + int(end_y)), 2)
+        length = scale
+        end_x = int(px * scale) + math.cos(self.game.player.angle) * length
+        end_y = int(py * scale) + math.sin(self.game.player.angle) * length
+        pg.draw.line(self.screen, (255, 255, 0), (10 + int(px * scale), 10 + int(py * scale)), (10 + int(end_x), 10 + int(end_y)), max(1, int(2/f)))
     def win(self):
         self.screen.blit(self.win_image, (0, 0))
 

@@ -2,7 +2,7 @@ from sprite_object import *
 from npc import *
 from random import choices, randrange
 from items import HealthPack, AmmoCrate
-
+import math
 class ObjectHandler:
     def __init__(self,game):
         self.game=game
@@ -70,9 +70,12 @@ class ObjectHandler:
     def spawn_npc(self):
         for i in range(self.enemies):
             npc = choices(self.npc_types, self.weights)[0]
-            pos = x, y = randrange(self.game.map.cols), randrange(self.game.map.rows)
-            while (pos in self.game.map.world_map) or (pos in self.restricted_area):
+            while True:
                 pos = x, y = randrange(self.game.map.cols), randrange(self.game.map.rows)
+                if pos not in self.game.map.world_map and pos not in self.restricted_area:
+                    px, py = self.game.player.pos
+                    if math.hypot(x - px, y - py) >= 10:
+                        break
             self.add_npc(npc(self.game, pos=(x + 0.5, y + 0.5)))
 
 

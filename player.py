@@ -20,6 +20,7 @@ class Player:
         self.rel=0
         self.health_recovery_delay=700
         self.time_prev=pg.time.get_ticks()
+        self.start_time = pg.time.get_ticks()
         self.diag_move_corr = 1 / math.sqrt(2)
 
     def recover_health(self):
@@ -42,6 +43,8 @@ class Player:
 
 
     def get_damage(self,damage):
+        if pg.time.get_ticks() - self.start_time < 5000:
+            return
         self.health-=damage
         self.game.object_renderer.player_damage()
         self.game.sound.player_pain.play()
