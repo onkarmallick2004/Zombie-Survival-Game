@@ -12,6 +12,10 @@
   },
   "license": "ISC",
   "author": "Shivam Mishra",
+  "contributors": [
+    "Shivam Mishra",
+    "Onkar Mallick"
+  ],
   "type": "commonjs",
   "main": "main.py",
   "scripts": {
